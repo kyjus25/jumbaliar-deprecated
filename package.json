@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "install": "cd ./mockdata-backend; npm i; cd ../mockdata-frontend; npm i;",
-    "start": "cd ./mockdata-backend; pm2 restart server.js; cd ../mockdata-frontend; npm start;"
+    "start": "cd ./mockdata-backend; pm2 stop --silent server.js; pm2 delete --silent server.js; pm2 start server.js; cd ../mockdata-frontend; npm start;"
   },
   "author": "",
   "license": "ISC",
