@@ -1,0 +1,13 @@
+{
+  "name": "mockdata-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": "cd ./mockdata-backend; npm i; cd ../mockdata-frontend; npm i;",
+    "start": "cd ./mockdata-backend; pm2 restart server.js; cd ../mockdata-frontend; npm start;"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {}
+}

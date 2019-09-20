@@ -1,0 +1,27 @@
+/* You can add global styles to this file, and also import other style files */
+p-dialog > div {
+  min-width: 800px;
+}
+
+p-dialog .add span {
+  font-size: 18px;
+}
+p-dialog .add input {
+  font-size: 18px;
+  padding: 5px;
+}
+
+body {
+  background: url('./assets/pixel-background-grey.jpg');
+  margin: 0;
+}
+app-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+p-panel {
+  width: 80vw;
+}

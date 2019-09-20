@@ -1,0 +1,44 @@
+<p-panel>
+  <p-header>Mockdata Administrator</p-header>
+  <p-table [value]="endpoints">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Path</th>
+        <th>Method</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-endpoint>
+      <tr>
+        <td>/services/{{endpoint.path}}</td>
+        <td>{{endpoint.method.toUpperCase()}}</td>
+        <td>
+          <p-button label="Edit Body" (onClick)="showObject(endpoint)"></p-button>&nbsp;&nbsp;&nbsp;
+          <p-button label="Delete" (onClick)="delete(endpoint)"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-panel>
+
+
+<br>
+
+<p-button label="Add New Endpoint" (onClick)="addEndpoint()"></p-button>
+
+
+<p-dialog [header]="modalPayload ? modalPayload.method.toUpperCase() + ' /services/' + modalPayload.path : 'New Endpoint'" [(visible)]="display" *ngIf="display">
+  <div *ngIf="modalPayload" class="update">
+    <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="code"></ngx-monaco-editor>
+  </div>
+
+  <div *ngIf="!modalPayload" class="add">
+    <b>Method:</b>&nbsp;&nbsp;&nbsp;<p-dropdown appendTo="body" [options]="methods" [(ngModel)]="method"></p-dropdown><br><br>
+    <b>Path:</b>&nbsp;&nbsp;&nbsp;<span>/services/<input type="text" pInputText [(ngModel)]="path"/></span>
+  </div>
+
+  <p-footer>
+    <p-button *ngIf="modalPayload" label="Save Object" (onClick)="saveObject()" [disabled]="checkMonaco()"></p-button>
+    <p-button *ngIf="!modalPayload" label="Save Endpoint" (onClick)="saveEndpoint()"></p-button>
+  </p-footer>
+</p-dialog>
