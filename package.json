@@ -6,9 +6,9 @@
   "scripts": {
     "install": "cd ./mockdata-backend; npm i; cd ../mockdata-frontend; npm i;",
     "start": "npm run stop-pm2; npm run start-be; npm run start-fe;",
-    "stop-pm2": "pm2 stop --silent server.js; pm2 delete --silent server.js;",
+    "stop-pm2": "pm2 stop --silent server; pm2 delete --silent server;",
     "start-be": "cd ./mockdata-backend; pm2 start server.js;",
-    "start-fe": "cd ./mockdata-frontend; pm2 start server.js;"
+    "start-fe": "cd ./mockdata-frontend; ng build --prod; pm2 start server.js;"
   },
   "author": "",
   "license": "ISC",

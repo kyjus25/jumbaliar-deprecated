@@ -9,10 +9,10 @@ import {HttpClient} from '@angular/common/http';
 export class MainComponent implements OnInit {
   public disableSave = false;
   public editorOptions = {theme: 'vs-dark', language: 'json'};
-  public code: string= '{\n\n}';
+  public code = '{\n\n}';
   public endpoints;
   public modalPayload;
-  public display: boolean = false;
+  public display = false;
   public path: string;
   public method = 'get';
   public methods = [
@@ -23,7 +23,7 @@ export class MainComponent implements OnInit {
   ];
 
   constructor(private http: HttpClient) {
-    this.http.get('http://cerebro.kako.cc/data').subscribe(res => {
+    this.http.get('http://localhost/data').subscribe(res => {
       this.endpoints = res;
     });
   }
@@ -33,7 +33,7 @@ export class MainComponent implements OnInit {
 
   public showObject(rowData) {
     this.modalPayload = rowData;
-    this.code = JSON.stringify(rowData.body, null, "   ");
+    this.code = JSON.stringify(rowData.body, null, '   ');
     this.display = true;
   }
 
@@ -47,7 +47,7 @@ export class MainComponent implements OnInit {
   public saveObject() {
     this.modalPayload.body = JSON.parse(this.code);
     this.modalPayload.action = 'update';
-    this.http.post('http://cerebro.kako.cc/data', this.modalPayload).subscribe(res => {
+    this.http.post('http://localhost/data', this.modalPayload).subscribe(res => {
       this.endpoints = res;
       this.display = false;
     });
@@ -61,7 +61,7 @@ export class MainComponent implements OnInit {
       body: {}
     };
 
-    this.http.post('http://cerebro.kako.cc/data', payload).subscribe(res => {
+    this.http.post('http://localhost/data', payload).subscribe(res => {
       this.endpoints = res;
       this.display = false;
     });
@@ -69,7 +69,7 @@ export class MainComponent implements OnInit {
 
   public delete(endpoint) {
     endpoint.action = 'delete';
-    this.http.post('http://cerebro.kako.cc/data', endpoint).subscribe(res => {
+    this.http.post('http://localhost/data', endpoint).subscribe(res => {
       this.endpoints = res;
     });
   }
