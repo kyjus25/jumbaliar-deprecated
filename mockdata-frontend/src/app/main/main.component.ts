@@ -23,7 +23,7 @@ export class MainComponent implements OnInit {
   ];
 
   constructor(private http: HttpClient) {
-    this.http.get('http://localhost:8081/data').subscribe(res => {
+    this.http.get('http://cerebro.kako.cc/data').subscribe(res => {
       this.endpoints = res;
     });
   }
@@ -47,7 +47,7 @@ export class MainComponent implements OnInit {
   public saveObject() {
     this.modalPayload.body = JSON.parse(this.code);
     this.modalPayload.action = 'update';
-    this.http.post('http://localhost:8081/data', this.modalPayload).subscribe(res => {
+    this.http.post('http://cerebro.kako.cc/data', this.modalPayload).subscribe(res => {
       this.endpoints = res;
       this.display = false;
     });
@@ -61,7 +61,7 @@ export class MainComponent implements OnInit {
       body: {}
     };
 
-    this.http.post('http://localhost:8081/data', payload).subscribe(res => {
+    this.http.post('http://cerebro.kako.cc/data', payload).subscribe(res => {
       this.endpoints = res;
       this.display = false;
     });
@@ -69,7 +69,7 @@ export class MainComponent implements OnInit {
 
   public delete(endpoint) {
     endpoint.action = 'delete';
-    this.http.post('http://localhost:8081/data', endpoint).subscribe(res => {
+    this.http.post('http://cerebro.kako.cc/data', endpoint).subscribe(res => {
       this.endpoints = res;
     });
   }

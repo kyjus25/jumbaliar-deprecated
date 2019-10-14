@@ -13,15 +13,4 @@ p-dialog .add input {
 
 body {
   background: url('./assets/pixel-background-grey.jpg');
-  margin: 0;
-}
-app-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-p-panel {
-  width: 80vw;
 }
