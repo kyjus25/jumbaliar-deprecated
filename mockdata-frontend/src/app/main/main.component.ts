@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {ConfirmationService} from 'primeng/primeng';
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.css']
+  styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit {
   public disableSave = false;
@@ -21,14 +22,22 @@ export class MainComponent implements OnInit {
     {label: 'DELETE', value: 'delete'},
     {label: 'PUT', value: 'put'}
   ];
+  cols: any[];
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private confirmationService: ConfirmationService
+  ) {
     this.http.get('http://localhost/data').subscribe(res => {
       this.endpoints = res;
     });
   }
 
   ngOnInit() {
+    this.cols = [
+      { field: 'path', header: 'Path' },
+      { field: 'method', header: 'Method' }
+    ];
   }
 
   public showObject(rowData) {
@@ -68,9 +77,16 @@ export class MainComponent implements OnInit {
   }
 
   public delete(endpoint) {
-    endpoint.action = 'delete';
-    this.http.post('http://localhost/data', endpoint).subscribe(res => {
-      this.endpoints = res;
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this endpoint?',
+      acceptLabel: 'Delete',
+      rejectLabel: 'Cancel',
+      accept: () => {
+        endpoint.action = 'delete';
+        this.http.post('http://localhost/data', endpoint).subscribe(res => {
+          this.endpoints = res;
+        });
+      }
     });
   }
 
