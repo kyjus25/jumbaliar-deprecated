@@ -11,7 +11,7 @@ import {ButtonModule} from 'primeng/button';
 import {HttpClientModule} from '@angular/common/http';
 import {DialogModule} from 'primeng/dialog';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {DropdownModule, PanelModule} from 'primeng/primeng';
+import {DropdownModule, PanelModule, ConfirmationService, ConfirmDialogModule} from 'primeng/primeng';
 
 @NgModule({
   declarations: [
@@ -29,9 +29,12 @@ import {DropdownModule, PanelModule} from 'primeng/primeng';
     HttpClientModule,
     DialogModule,
     DropdownModule,
-    PanelModule
+    PanelModule,
+    ConfirmDialogModule
   ],
-  providers: [],
+  providers: [
+    ConfirmationService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
