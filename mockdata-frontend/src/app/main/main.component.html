@@ -11,7 +11,7 @@
             placeholder="Search for an endpoint"
             (input)="endpointsTable.filterGlobal($event.target.value, 'contains')">      
         </div>
-        <p-button styleClass="better-buttons" label="Add New Endpoint" (onClick)="addEndpoint()"></p-button>
+        <p-button label="Add New Endpoint" (onClick)="addEndpoint()"></p-button>
       </div>
     </ng-template>
     <ng-template pTemplate="header" let-columns>
@@ -24,33 +24,17 @@
           Actions
         </th>
       </tr>
-      <!-- <tr>
-        <th>Path</th>
-        <th>Method</th>
-        <th>Actions</th>
-      </tr> -->
     </ng-template>
-    <ng-template pTemplate="body" let-endpoint let-columns="columns">
-      <tr>
-        <td *ngFor="let col of columns">
-          {{endpoint[col.field]}}
-        </td>
-        <td>
-          <p-button styleClass="better-buttons" label="Edit Body" (onClick)="showObject(endpoint)"></p-button>&nbsp;&nbsp;&nbsp;
-          <p-button styleClass="better-buttons" label="Delete" (onClick)="delete(endpoint)"></p-button>
-        </td>
-      </tr>
-    </ng-template>
-    <!-- <ng-template pTemplate="body" let-endpoint>
+    <ng-template pTemplate="body" let-endpoint>
       <tr>
         <td>/services/{{endpoint.path}}</td>
         <td>{{endpoint.method.toUpperCase()}}</td>
         <td>
-          <p-button styleClass="better-buttons" label="Edit Body" (onClick)="showObject(endpoint)"></p-button>&nbsp;&nbsp;&nbsp;
-          <p-button styleClass="better-buttons" label="Delete" (onClick)="delete(endpoint)"></p-button>
+          <p-button label="Edit Body" (onClick)="showObject(endpoint)"></p-button>&nbsp;&nbsp;&nbsp;
+          <p-button label="Delete" (onClick)="delete(endpoint)"></p-button>
         </td>
       </tr>
-    </ng-template> -->
+    </ng-template>
   </p-table>
 </p-panel>
 
@@ -69,8 +53,8 @@
   </div>
 
   <p-footer>
-    <p-button *ngIf="modalPayload" styleClass="better-buttons" label="Save Object" (onClick)="saveObject()" [disabled]="checkMonaco()"></p-button>
-    <p-button *ngIf="!modalPayload" styleClass="better-buttons" label="Save Endpoint" (onClick)="saveEndpoint()"></p-button>
+    <p-button *ngIf="modalPayload" label="Save Object" (onClick)="saveObject()" [disabled]="checkMonaco()"></p-button>
+    <p-button *ngIf="!modalPayload" label="Save Endpoint" (onClick)="saveEndpoint()"></p-button>
   </p-footer>
 </p-dialog>
 

@@ -3,6 +3,10 @@ p-dialog {
 }
 
 :host::ng-deep {
+  th.ui-sortable-column.ng-star-inserted.ui-state-highlight {
+    background-color: #F4877D;
+  }
+
   button.ui-button {
     background-color: #324050;
     color: #EBF4EB;
@@ -62,8 +66,11 @@ p-dialog {
       background-color: #F39F91;
       div.update.ng-star-inserted {
         height: 400px;
-        ngx-monaco-editor div.editor-container div.monaco-editor.no-user-select {
-          height: 400px !important;
+        ngx-monaco-editor {
+          height: 400px;
+          div.editor-container div.monaco-editor.no-user-select {
+            height: 400px !important;
+          }
         }
       }
     }

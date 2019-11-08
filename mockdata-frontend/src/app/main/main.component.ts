@@ -34,20 +34,6 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.endpoints = [
-      {
-        path: '/services/ldapUser',
-        method: 'GET'
-      },
-      {
-        path: '/services/ldapUser',
-        method: 'PUT'
-      },
-      {
-        path: '/services/ldapUser',
-        method: 'DELETE'
-      },
-    ]
     this.cols = [
       { field: 'path', header: 'Path' },
       { field: 'method', header: 'Method' }
