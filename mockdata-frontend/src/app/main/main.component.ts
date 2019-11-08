@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.css']
+  styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit {
   public disableSave = false;
@@ -21,6 +21,7 @@ export class MainComponent implements OnInit {
     {label: 'DELETE', value: 'delete'},
     {label: 'PUT', value: 'put'}
   ];
+  cols: any[];
 
   constructor(private http: HttpClient) {
     this.http.get('http://localhost/data').subscribe(res => {
@@ -29,6 +30,24 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.endpoints = [
+      {
+        path: '/services/ldapUser',
+        method: 'GET'
+      },
+      {
+        path: '/services/ldapUser',
+        method: 'PUT'
+      },
+      {
+        path: '/services/ldapUser',
+        method: 'DELETE'
+      },
+    ]
+    this.cols = [
+      { field: 'path', header: 'Path' },
+      { field: 'method', header: 'Method' }
+    ];
   }
 
   public showObject(rowData) {

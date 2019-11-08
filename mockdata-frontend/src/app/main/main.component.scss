@@ -1,0 +1,126 @@
+p-dialog {
+  height: 500px;
+}
+
+// .better-buttons {
+//   background-color: #324050;
+//   color: white;
+//   border-color: #F37950;
+//   :hover {
+//     background-color: #EBF4EB;
+//     color: #324050;
+//     border-radius: 3px;
+//     border-color: #F37950;
+//     border-width: 3px;
+//   }
+//   transition: background-color 0.2s, box-shadow 0.2s;
+// }
+
+:host::ng-deep {
+  body ui-button {
+    background-color: #324050;
+    color: #EBF4EB;
+    border: 1px solid #F37950;
+    :hover {
+      background-color: #EBF4EB;
+      color: #324050;
+      border-radius: 3px;
+      border-color: #F37950;
+      border-width: 3px;
+      transition: background-color 0.2s, box-shadow 0.2s;
+    }
+    transition: background-color 0.2s, box-shadow 0.2s;
+  }
+  p-button button.ui-button {
+    background-color: #324050;
+    color: #EBF4EB;
+    border: none;
+    border-radius: 2.5px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    :hover {
+      background-color: #EBF4EB;
+      color: #324050;
+      border-radius: 2.5px;
+    }
+    span {
+      background-color: #324050;
+      color: #EBF4EB;
+      border: none;
+      border-radius: 2.5px;
+      transition: background-color 0.2s, box-shadow 0.2s;
+      :hover {
+        background-color: #EBF4EB;
+        color: #324050;
+        border-radius: 2.5px;
+      }
+    }
+  }
+
+  div.ui-panel {
+    border: 2.5px solid #324050;
+  }
+
+  div.ui-widget-header.ui-panel-titlebar {
+    background-color: #F37950;
+    color: #EBF4EB;
+    text-shadow: 0 0 3px #324050;
+    font-weight: bold;
+    font-size: 2em;
+    font-style: italic;
+    text-align: center;
+    border-width: 1px;
+    p-button button {
+      text-align: end;
+    }
+  }
+
+
+  p-dialog div.ui-dialog.ui-widget.ui-widget-content.ui-corner-all {
+    border: 1px solid #324050;
+    top: 200px;
+    div.ui-dialog-titlebar {
+      background-color: #F37950;
+      color: white;
+      text-shadow: 0 0 3px #324050;
+      a {
+        color: white;
+      }
+    }
+    div.ui-dialog-content.ui-widget-content {
+      background-color: #F39F91;
+      height: 400px;
+      div.update.ng-star-inserted ngx-monaco-editor div.editor-container div.monaco-editor.no-user-select {
+        height: 380px !important;
+      }
+    }
+    div.ui-dialog-footer.ui-widget-content {
+      background-color: #F4877D;
+    }
+  }
+}
+
+.flex-caption {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filter-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  i {
+    margin-right: .5em;
+  }
+  input {
+    height: 100%;
+    font-size: 1em;
+    width: 100%;
+  }
+  width: 30%;
+}
+
+.template-editor {
+  .editorContainer {
+    height: 800px;
+  }
+}

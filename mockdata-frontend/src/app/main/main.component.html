@@ -1,30 +1,61 @@
 <p-panel>
-  <p-header>Mockdata Administrator</p-header>
-  <p-table [value]="endpoints">
-    <ng-template pTemplate="header">
+  <p-header class="flexbox">JumbaLiar</p-header>
+  <p-table #endpointsTable [columns]="cols" [value]="endpoints">
+    <ng-template pTemplate="caption">
+      <div class="flex-caption">
+        <div class="filter-input">
+          <i class="fas fa-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Search for an endpoint"
+            (input)="endpointsTable.filterGlobal($event.target.value, 'contains')">      
+        </div>
+        <p-button styleClass="better-buttons" label="Add New Endpoint" (onClick)="addEndpoint()"></p-button>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
       <tr>
+        <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+          {{col.header}}
+          <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+        </th>
+        <th>
+          Actions
+        </th>
+      </tr>
+      <!-- <tr>
         <th>Path</th>
         <th>Method</th>
         <th>Actions</th>
+      </tr> -->
+    </ng-template>
+    <ng-template pTemplate="body" let-endpoint let-columns="columns">
+      <tr>
+        <td *ngFor="let col of columns">
+          {{endpoint[col.field]}}
+        </td>
+        <td>
+          <p-button styleClass="better-buttons" label="Edit Body" (onClick)="showObject(endpoint)"></p-button>&nbsp;&nbsp;&nbsp;
+          <p-button styleClass="better-buttons" label="Delete" (onClick)="delete(endpoint)"></p-button>
+        </td>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-endpoint>
+    <!-- <ng-template pTemplate="body" let-endpoint>
       <tr>
         <td>/services/{{endpoint.path}}</td>
         <td>{{endpoint.method.toUpperCase()}}</td>
         <td>
-          <p-button label="Edit Body" (onClick)="showObject(endpoint)"></p-button>&nbsp;&nbsp;&nbsp;
-          <p-button label="Delete" (onClick)="delete(endpoint)"></p-button>
+          <p-button styleClass="better-buttons" label="Edit Body" (onClick)="showObject(endpoint)"></p-button>&nbsp;&nbsp;&nbsp;
+          <p-button styleClass="better-buttons" label="Delete" (onClick)="delete(endpoint)"></p-button>
         </td>
       </tr>
-    </ng-template>
+    </ng-template> -->
   </p-table>
 </p-panel>
 
 
 <br>
-
-<p-button label="Add New Endpoint" (onClick)="addEndpoint()"></p-button>
 
 
 <p-dialog [header]="modalPayload ? modalPayload.method.toUpperCase() + ' /services/' + modalPayload.path : 'New Endpoint'" [(visible)]="display" *ngIf="display">
@@ -38,7 +69,7 @@
   </div>
 
   <p-footer>
-    <p-button *ngIf="modalPayload" label="Save Object" (onClick)="saveObject()" [disabled]="checkMonaco()"></p-button>
-    <p-button *ngIf="!modalPayload" label="Save Endpoint" (onClick)="saveEndpoint()"></p-button>
+    <p-button *ngIf="modalPayload" styleClass="better-buttons" label="Save Object" (onClick)="saveObject()" [disabled]="checkMonaco()"></p-button>
+    <p-button *ngIf="!modalPayload" styleClass="better-buttons" label="Save Endpoint" (onClick)="saveEndpoint()"></p-button>
   </p-footer>
 </p-dialog>

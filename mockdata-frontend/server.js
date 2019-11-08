@@ -1,7 +1,7 @@
 const express = require('express');
 
 const app = express();
-const PORT = process.env.PORT = 8080;
+const PORT = process.env.PORT = 7384;
 
 app.use( express.static(__dirname + '/dist/mockdata-frontend' ) );
 
