@@ -26,3 +26,5 @@ src/libs/
 
 # VSCode
 .vscode/
+
+mockdata-backend/config.json
