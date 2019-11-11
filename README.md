@@ -22,6 +22,10 @@ NOTE: If the frontend or backend are not currently running, the `pm2 stop server
 • Backend `http://localhost`<br>
 • Frontend `http://localhost:7384`
 
+## Special Thanks
+
+• [bbisping](https://github.com/bbisping) for his awesome redesign of the frontend to make it the JumbaLiar it is today.
+
 ## Notes
 
 #### "FULL" Method
