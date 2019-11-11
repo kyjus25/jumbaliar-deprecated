@@ -15,8 +15,9 @@ export class MainComponent implements OnInit {
   public modalPayload;
   public display = false;
   public path: string;
-  public method = 'get';
+  public method = 'full';
   public methods = [
+    {label: 'FULL', value: 'full'},
     {label: 'GET', value: 'get'},
     {label: 'POST', value: 'post'},
     {label: 'DELETE', value: 'delete'},
