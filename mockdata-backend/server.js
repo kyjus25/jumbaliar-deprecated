@@ -78,18 +78,18 @@ function saveConfig(config) {
   });
 }
 
-function readCrud(index, id) {
+function readCrud(index, id, res) {
   const toSend = config[index].body.find(item => {
     return Object.keys(item).findIndex(key => item[key] === id) > -1;
   });
   if (toSend) {
-    return parseBody(toSend);
+    parseBody(toSend, res);
   } else {
-    return {status: 404}
+    res.status(404).send({'status': 404});
   }
 }
 
-function createCrud(index, body) {
+function createCrud(index, body, res) {
   body['id'] = uuid();
   body['createdBy'] = 'JumbaLiar';
   body['createdOn'] = Date.now();
@@ -98,10 +98,10 @@ function createCrud(index, body) {
   body['updatedOn'] = Date.now();
   config[index].body.push(body);
   saveConfig(config);
-  return body;
+  body ? res.send(body) : res.status(404).send({'status': 404});
 }
 
-function updateCrud(index, id, body) {
+function updateCrud(index, id, body, res) {
   body['versionId'] = uuid();
   body['updatedBy'] = 'JumbaLiar';
   body['updatedOn'] = Date.now();
@@ -110,27 +110,31 @@ function updateCrud(index, id, body) {
   });
   toUpdate ? Object.assign(toUpdate, body) : null;
   saveConfig(config);
-  return toUpdate;
+  toUpdate ? res.send(toUpdate) : res.status(404).send({'status': 404});
 }
 
-function deleteCrud(index, id) {
+function deleteCrud(index, id, res) {
   const toDelete = config[index].body.findIndex(item => {
     return Object.keys(item).findIndex(key => item[key] === id) > -1;
   });
   toDelete > -1 ? config[index].body.splice(toDelete, 1) : null;
   saveConfig(config);
-  return {'status': '200'};
+  toDelete > -1 ? res.send({status: 200}) : res.status(404).send({'status': 404});
 }
 
-function parseBody(body) {
-  try {
-    body.forEach(item => {
-      parseItem(item);
-    });
-  } catch (e) {
-    parseItem(body);
+function parseBody(body, res) {
+  if (body) {
+    try {
+      body.forEach(item => {
+        parseItem(item);
+      });
+    } catch (e) {
+      parseItem(body);
+    }
+    res.send(body);
+  } else {
+    res.status(404).send({'status': 404});
   }
-  return body;
 }
 
 function parseItem(item) {
@@ -152,13 +156,13 @@ function parseItem(item) {
 
 for (let i = 0; i < config.length; i++) {
   if (config[i].method === 'full') {
-    app['get'](base + '/' + config[i].path, (req, res) => res.send(parseBody(config[i].body)));
-    app['get'](base + '/' + config[i].path + '/:id', (req, res) => res.send(readCrud(i, req.params.id)));
-    app['post'](base + '/' + config[i].path, (req, res) => res.send(createCrud(i, req.body)));
-    app['put'](base + '/' + config[i].path + '/:id', (req, res) => res.send(updateCrud(i, req.params.id, req.body)));
-    app['delete'](base + '/' + config[i].path + '/:id', (req, res) => res.send(deleteCrud(i, req.params.id)));
+    app['get'](base + '/' + config[i].path, (req, res) => parseBody(config[i].body, res));
+    app['get'](base + '/' + config[i].path + '/:id', (req, res) => readCrud(i, req.params.id, res));
+    app['post'](base + '/' + config[i].path, (req, res) => createCrud(i, req.body, res));
+    app['put'](base + '/' + config[i].path + '/:id', (req, res) => updateCrud(i, req.params.id, req.body, res));
+    app['delete'](base + '/' + config[i].path + '/:id', (req, res) => deleteCrud(i, req.params.id, res));
   } else if (config[i].method === 'get') {
-    app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(parseBody(config[i].body)) : res.status(404).send({'status': 404}));
+    app[config[i].method](base + '/' + config[i].path, (req, res) => parseBody(config[i]['body'], res));
   } else {
     app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(config[i].body) : res.status(404).send({'status': 404}));
   }
