@@ -53,16 +53,24 @@ app.post('/data', (req, res) => {
       break;
   }
 
-  saveConfig(config);
+  saveAndRestart(config);
   res.send(config);
 });
+
+function saveAndRestart(config) {
+  fs.writeFile(__dirname + "/config.json", JSON.stringify(config), function(err) {
+    if(err) {
+      return console.log(err);
+    }
+    restartServer();
+  });
+}
 
 function saveConfig(config) {
   fs.writeFile(__dirname + "/config.json", JSON.stringify(config), function(err) {
     if(err) {
       return console.log(err);
     }
-    restartServer();
   });
 }
 
@@ -90,15 +98,19 @@ function updateCrud(index, id, body) {
   body['versionId'] = uuid();
   body['updatedBy'] = 'JumbaLiar';
   body['updatedOn'] = Date.now();
-  const toUpdate = config[index].body.find(obj => obj.id === id);
-  Object.assign(toUpdate, body);
+  const toUpdate = config[index].body.find(item => {
+    return Object.keys(item).findIndex(key => item[key] === id) > -1;
+  });
+  toUpdate ? Object.assign(toUpdate, body) : null;
   saveConfig(config);
-  return body;
+  return toUpdate;
 }
 
 function deleteCrud(index, id) {
-  const toDelete = config[index].body.findIndex(obj => obj.id === id);
-  config[index].body.splice(toDelete, 1);
+  const toDelete = config[index].body.findIndex(item => {
+    return Object.keys(item).findIndex(key => item[key] === id) > -1;
+  });
+  toDelete > -1 ? config[index].body.splice(toDelete, 1) : null;
   saveConfig(config);
   return {'status': '200'};
 }
