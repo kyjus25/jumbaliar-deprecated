@@ -104,23 +104,31 @@ function deleteCrud(index, id) {
 }
 
 function parseBody(body) {
-  body.forEach(item => {
-    Object.keys(item).forEach(key => {
-      const regex = item[key].toString().match('\{{.*?\}}');
-      if (regex && regex[0]) {
-        const dto = regex[0].replace('{{','').replace('}}','').split('[')[0];
-        const hasIndex = regex[0].replace('{{','').replace('}}','').split('[')[1];
-        const index = hasIndex ? hasIndex.split(']')[0] : undefined;
-        const dtoKey = regex[0].replace('{{','').replace('}}','').split('.')[1];
-
-        const endpointBody = config.find(endpoint => endpoint.path === dto && (endpoint.method === 'full' || endpoint.method === 'get')).body;
-        const object = index ? endpointBody[index] : endpointBody;
-        const value = dtoKey ? object[dtoKey] : object;
-        item[key] = value;
-      }
+  try {
+    body.forEach(item => {
+      parseItem(item);
     });
-  });
+  } catch (e) {
+    parseItem(body);
+  }
   return body;
+}
+
+function parseItem(item) {
+  Object.keys(item).forEach(key => {
+    const regex = item[key].toString().match('\{{.*?\}}');
+    if (regex && regex[0]) {
+      const dto = regex[0].replace('{{','').replace('}}','').split('[')[0];
+      const hasIndex = regex[0].replace('{{','').replace('}}','').split('[')[1];
+      const index = hasIndex ? hasIndex.split(']')[0] : undefined;
+      const dtoKey = regex[0].replace('{{','').replace('}}','').split('.')[1];
+
+      const endpointBody = config.find(endpoint => endpoint.path === dto && (endpoint.method === 'full' || endpoint.method === 'get')).body;
+      const object = index ? endpointBody[index] : endpointBody;
+      const value = dtoKey ? object[dtoKey] : object;
+      item[key] = value;
+    }
+  });
 }
 
 for (let i = 0; i < config.length; i++) {
