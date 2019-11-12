@@ -62,7 +62,11 @@ function saveAndRestart(config) {
     if(err) {
       return console.log(err);
     }
-    restartServer();
+    server.close();
+    child_process.exec('pm2 restart server.js', function(error, stdout, stderr){
+      console.log(error);
+    });
+    process.exit();
   });
 }
 
@@ -72,15 +76,6 @@ function saveConfig(config) {
       return console.log(err);
     }
   });
-}
-
-function restartServer() {
-  buildEndpoints();
-  // server.close();
-  // child_process.exec('pm2 restart server.js', function(error, stdout, stderr){
-  //   console.log(error);
-  // });
-  // process.exit();
 }
 
 function readCrud(index, id) {
@@ -155,21 +150,18 @@ function parseItem(item) {
   });
 }
 
-function buildEndpoints() {
-  for (let i = 0; i < config.length; i++) {
-    if (config[i].method === 'full') {
-      app['get'](base + '/' + config[i].path, (req, res) => res.send(parseBody(config[i].body)));
-      app['get'](base + '/' + config[i].path + '/:id', (req, res) => res.send(readCrud(i, req.params.id)));
-      app['post'](base + '/' + config[i].path, (req, res) => res.send(createCrud(i, req.body)));
-      app['put'](base + '/' + config[i].path + '/:id', (req, res) => res.send(updateCrud(i, req.params.id, req.body)));
-      app['delete'](base + '/' + config[i].path + '/:id', (req, res) => res.send(deleteCrud(i, req.params.id)));
-    } else if (config[i].method === 'get') {
-      app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(parseBody(config[i].body)) : res.status(404).send({'status': 404}));
-    } else {
-      app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(config[i].body) : res.status(404).send({'status': 404}));
-    }
+for (let i = 0; i < config.length; i++) {
+  if (config[i].method === 'full') {
+    app['get'](base + '/' + config[i].path, (req, res) => res.send(parseBody(config[i].body)));
+    app['get'](base + '/' + config[i].path + '/:id', (req, res) => res.send(readCrud(i, req.params.id)));
+    app['post'](base + '/' + config[i].path, (req, res) => res.send(createCrud(i, req.body)));
+    app['put'](base + '/' + config[i].path + '/:id', (req, res) => res.send(updateCrud(i, req.params.id, req.body)));
+    app['delete'](base + '/' + config[i].path + '/:id', (req, res) => res.send(deleteCrud(i, req.params.id)));
+  } else if (config[i].method === 'get') {
+    app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(parseBody(config[i].body)) : res.status(404).send({'status': 404}));
+  } else {
+    app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(config[i].body) : res.status(404).send({'status': 404}));
   }
 }
 
-buildEndpoints();
 const server = app.listen(port, () => console.log(`Mock data server listening on port ${port}!`));
