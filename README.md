@@ -33,6 +33,7 @@ NOTE: If the frontend or backend are not currently running, the `pm2 stop server
 When specifying a CRUD method, you can set the method to "FULL". This will set up full CRUD on the endpoint and generate unique audited information when a POST and PUT are made to the endpoint. <br>
 • GET (getAll) `/services/<endpoint>` (no body) <br>
 • POST (create) `/services/<endpoint>/<id>` (body) <br>
+• GET (read) `/services/<endpoint>/<id>` (no body) <br>
 • PUT (update) `/services/<endpoint>/<id>` (body) <br>
 • DELETE (delete) `/services/<endpoint>/<id>` (no body)
 
