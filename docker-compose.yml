@@ -1,0 +1,10 @@
+public:
+    build: ./mockdata-frontend
+    ports:
+        - 8086:80
+server:
+    build: ./mockdata-backend
+    volumes:
+        - ./mockdata-backend/config.json:/node/config.json
+    ports:
+        - 80:80

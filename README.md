@@ -8,10 +8,18 @@ JumbaLiar is a frontend and backend that allows the user to quickly generate moc
 ## Prerequisites
 • PM2 (`npm install pm2 -g` if you do not already have it.)<br>
 • Angular CLI (`npm install @angular/cli -g` if you do not already have it.)
+• Docker Compose (if using docker)
 
-## Install 
+## Install
 `cd` into the _root_ of the repository and type `npm install`.<br>
 The install script will install both of the frontend and backend dependencies into their respective folders.
+
+## Docker
+In the root directory, run `npm run start-docker`.<br>
+This will start both the frontend and backend servers. The frontend will be built using AOT and may take some time to finish. Please be patient.<br>
+
+• Backend `http://localhost`<br>
+• Frontend `http://localhost:8086`
 
 ## Start
 In the root directory, run `npm start`.<br>
@@ -19,8 +27,10 @@ This will start both the frontend and backend servers. The frontend will be buil
 
 NOTE: If the frontend or backend are not currently running, the `pm2 stop server.js` and `pm2 delete server.js` commands will fail in the console. This is to be expected and can be ignored. The startup process will continue.<br>
 
+## Ports
+
 • Backend `http://localhost`<br>
-• Frontend `http://localhost:7384`
+• Frontend `http://localhost:8086`
 
 ## Special Thanks
 
