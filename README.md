@@ -18,9 +18,6 @@ The install script will install both of the frontend and backend dependencies in
 In the root directory, run `npm run start-docker`.<br>
 This will start both the frontend and backend servers. The frontend will be built using AOT and may take some time to finish. Please be patient.<br>
 
-• Backend `http://localhost`<br>
-• Frontend `http://localhost:8086`
-
 ## Start
 In the root directory, run `npm start`.<br>
 This will start both the frontend and backend servers. The frontend will be built using AOT and may take some time to finish. Please be patient.<br>
