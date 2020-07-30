@@ -167,7 +167,6 @@ for (let i = 0; i < config.length; i++) {
 }
 
 app.post('/services/auth/login', (req, res) => {
-  console.log(req.body);
   if (req.body['username'] && req.body['password']) {
     const foundAdmin = admins.find(i => i.username === req.body['username'] && i.password === req.body['password']);
     if (foundAdmin) {
