@@ -63,9 +63,6 @@ function saveAndRestart(config) {
       return console.log(err);
     }
     server.close();
-    child_process.exec('pm2 restart server.js', function(error, stdout, stderr){
-      console.log(error);
-    });
     process.exit();
   });
 }
