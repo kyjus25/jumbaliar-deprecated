@@ -29,7 +29,7 @@ export class MainComponent implements OnInit {
     private http: HttpClient,
     private confirmationService: ConfirmationService
   ) {
-    this.http.get('http://localhost/data').subscribe(res => {
+    this.http.get(window["env"]["backendUrl"] + '/data').subscribe(res => {
       this.endpoints = res;
     });
   }
@@ -57,7 +57,7 @@ export class MainComponent implements OnInit {
   public saveObject() {
     this.modalPayload.body = JSON.parse(this.code);
     this.modalPayload.action = 'update';
-    this.http.post('http://localhost/data', this.modalPayload).subscribe(res => {
+    this.http.post(window["env"]["backendUrl"] + '/data', this.modalPayload).subscribe(res => {
       this.endpoints = res;
       this.display = false;
     });
@@ -71,7 +71,7 @@ export class MainComponent implements OnInit {
       body: {}
     };
 
-    this.http.post('http://localhost/data', payload).subscribe(res => {
+    this.http.post(window["env"]["backendUrl"] + '/data', payload).subscribe(res => {
       this.endpoints = res;
       this.display = false;
     });
@@ -84,7 +84,7 @@ export class MainComponent implements OnInit {
       rejectLabel: 'Cancel',
       accept: () => {
         endpoint.action = 'delete';
-        this.http.post('http://localhost/data', endpoint).subscribe(res => {
+        this.http.post(window["env"]["backendUrl"] + '/data', endpoint).subscribe(res => {
           this.endpoints = res;
         });
       }
