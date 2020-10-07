@@ -12,7 +12,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const config = require('./config.json');
-const admins = require('./admins.json');
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -165,20 +164,5 @@ for (let i = 0; i < config.length; i++) {
     app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(config[i].body) : res.status(404).send({'status': 404}));
   }
 }
-
-app.post('/services/auth/login', (req, res) => {
-  if (req.body['username'] && req.body['password']) {
-    const foundAdmin = admins.find(i => i.username === req.body['username'] && i.password === req.body['password']);
-    if (foundAdmin) {
-      const payload = Object.assign({}, foundAdmin);
-      delete payload['password'];
-      res.send(payload);
-    } else {
-      res.status(403).send({'status': 403});
-    }
-  } else {
-    res.status(400).send({'status': 400});
-  }
-});
 
 const server = app.listen(port, () => console.log(`Mock data server listening on port ${port}!`));
