@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 var upload = multer({
   storage: multer.diskStorage({
     destination: function(req, file, callback) {
-      callback(null, "./images");
+      callback(null, "./uploads");
     },
     filename: function(req, file, callback) {
       callback(null, req.params.id + '.' + mime.extension(file.mimetype));
@@ -154,6 +154,9 @@ function parseBody(body, req, res) {
 
 function parseItem(item) {
   Object.keys(item).forEach(key => {
+
+    console.log(item[key]);
+
     const regex = item[key].toString().match('\{{.*?\}}');
     if (regex && regex[0]) {
       const dto = regex[0].replace('{{','').replace('}}','').split('[')[0];
@@ -184,9 +187,9 @@ for (let i = 0; i < config.length; i++) {
 }
 
 // FILE UPLOADS
-app.get(base + '/image', function(req, res){
+app.get(base + '/uploads', function(req, res){
   try {
-    fs.readdir('./images', (err, files) => {
+    fs.readdir('./uploads', (err, files) => {
       res.send(files.filter(i => i !== '.gitkeep'));
     });
   } catch(err) {
@@ -194,7 +197,7 @@ app.get(base + '/image', function(req, res){
     res.status(500).send({'500': 'error'});
   }
 });
-app.post(base + '/image/:id', function(req, res){
+app.post(base + '/uploads/:id', function(req, res){
   upload(req, res, function(err, body) {
     if (err) {
       console.log(err);
@@ -204,9 +207,9 @@ app.post(base + '/image/:id', function(req, res){
     }
   });
 });
-app.delete(base + '/image/:id', function(req, res){
+app.delete(base + '/uploads/:id', function(req, res){
   try {
-    fs.unlinkSync('./images/' + req.params.id);
+    fs.unlinkSync('./uploads/' + req.params.id);
     res.send({'200': 'ok'});
   } catch(err) {
     console.error(err);

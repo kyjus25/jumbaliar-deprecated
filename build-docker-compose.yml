@@ -9,6 +9,6 @@ jumbaliar_backend:
     volumes:
         - ./mockdata-backend/config.json:/node/config.json
         - ./mockdata-backend/proxy.json:/node/proxy.json
-        - ./mockdata-backend/images:/node/images
+        - ./mockdata-backend/uploads:/node/uploads
     ports:
         - 80:80
