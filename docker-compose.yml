@@ -10,5 +10,6 @@ jumbaliar_backend:
   restart: always
   volumes:
       - ./config.json:/node/config.json
+      - ./proxy.json:/node/proxy.json
   ports:
       - 80:80

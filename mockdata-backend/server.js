@@ -6,12 +6,17 @@ const base = '/services';
 const bodyParser = require('body-parser');
 const cors = require("cors");
 const fs = require('fs');
+const axios = require('axios');
+const https = require('https');
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const config = require('./config.json');
+let config = [];
+try { config = require('./config.json') } catch (e) { console.error('No config file detected. Please pass one in.'); }
+let proxy = [];
+try { proxy = require('./proxy.json') } catch (e) { console.log('No proxy file detected.'); }
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -75,18 +80,18 @@ function saveConfig(config) {
   });
 }
 
-function readCrud(index, id, res) {
+function readCrud(index, id, req, res) {
   const toSend = config[index].body.find(item => {
     return Object.keys(item).findIndex(key => item[key] === id) > -1;
   });
   if (toSend) {
-    parseBody(toSend, res);
+    parseBody(toSend, req, res);
   } else {
-    res.status(404).send({'status': 404});
+    checkProxy(req, res);
   }
 }
 
-function createCrud(index, body, res) {
+function createCrud(index, body, req, res) {
   body['id'] = uuid();
   body['createdBy'] = 'JumbaLiar';
   body['createdOn'] = Date.now();
@@ -95,10 +100,10 @@ function createCrud(index, body, res) {
   body['updatedOn'] = Date.now();
   config[index].body.push(body);
   saveConfig(config);
-  body ? res.send(body) : res.status(404).send({'status': 404});
+  body ? res.send(body) : checkProxy(req, res);
 }
 
-function updateCrud(index, id, body, res) {
+function updateCrud(index, id, body, req, res) {
   body['versionId'] = uuid();
   body['updatedBy'] = 'JumbaLiar';
   body['updatedOn'] = Date.now();
@@ -107,19 +112,19 @@ function updateCrud(index, id, body, res) {
   });
   toUpdate ? Object.assign(toUpdate, body) : null;
   saveConfig(config);
-  toUpdate ? res.send(toUpdate) : res.status(404).send({'status': 404});
+  toUpdate ? res.send(toUpdate) : checkProxy(req, res);
 }
 
-function deleteCrud(index, id, res) {
+function deleteCrud(index, id, req, res) {
   const toDelete = config[index].body.findIndex(item => {
     return Object.keys(item).findIndex(key => item[key] === id) > -1;
   });
   toDelete > -1 ? config[index].body.splice(toDelete, 1) : null;
   saveConfig(config);
-  toDelete > -1 ? res.send({status: 200}) : res.status(404).send({'status': 404});
+  toDelete > -1 ? res.send({status: 200}) : checkProxy(req, res);
 }
 
-function parseBody(body, res) {
+function parseBody(body, req, res) {
   if (body) {
     try {
       body.forEach(item => {
@@ -130,7 +135,7 @@ function parseBody(body, res) {
     }
     res.send(body);
   } else {
-    res.status(404).send({'status': 404});
+    checkProxy(req, res);
   }
 }
 
@@ -153,15 +158,60 @@ function parseItem(item) {
 
 for (let i = 0; i < config.length; i++) {
   if (config[i].method === 'full') {
-    app['get'](base + '/' + config[i].path, (req, res) => parseBody(config[i].body, res));
-    app['get'](base + '/' + config[i].path + '/:id', (req, res) => readCrud(i, req.params.id, res));
-    app['post'](base + '/' + config[i].path, (req, res) => createCrud(i, req.body, res));
-    app['put'](base + '/' + config[i].path + '/:id', (req, res) => updateCrud(i, req.params.id, req.body, res));
-    app['delete'](base + '/' + config[i].path + '/:id', (req, res) => deleteCrud(i, req.params.id, res));
+    app['get'](base + '/' + config[i].path, (req, res) => parseBody(config[i].body, req, res));
+    app['get'](base + '/' + config[i].path + '/:id', (req, res) => readCrud(i, req.params.id, req, res));
+    app['post'](base + '/' + config[i].path, (req, res) => createCrud(i, req.body, req, res));
+    app['put'](base + '/' + config[i].path + '/:id', (req, res) => updateCrud(i, req.params.id, req.body, req, res));
+    app['delete'](base + '/' + config[i].path + '/:id', (req, res) => deleteCrud(i, req.params.id, req, res));
   } else if (config[i].method === 'get') {
-    app[config[i].method](base + '/' + config[i].path, (req, res) => parseBody(config[i]['body'], res));
+    app[config[i].method](base + '/' + config[i].path, (req, res) => parseBody(config[i]['body'], req, res));
   } else {
-    app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(config[i].body) : res.status(404).send({'status': 404}));
+    app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(config[i].body) : checkProxy(req, res));
+  }
+}
+
+// THE 404 ROUTE
+app.get('*', function(req, res){ checkProxy(req, res); });
+app.post('*', function(req, res){ checkProxy(req, res); });
+app.put('*', function(req, res){ checkProxy(req, res); });
+app.delete('*', function(req, res){ checkProxy(req, res); });
+app.options('*', function(req, res){ checkProxy(req, res); });
+
+
+
+function checkProxy(req, res) {
+  const agent = new https.Agent({
+    rejectUnauthorized: false
+  });
+  const headers = req.headers['authorization'] ? {authorization: req.headers['authorization']} : {};
+  const promises = [];
+  proxy.forEach(i => {
+    promises.push(
+      axios[req.method.toLowerCase()](`${i}${req.url}`, {httpsAgent: agent, headers: headers} )
+    );
+  });
+
+  if (promises.length > 0) {
+    let iteration = 0;
+    let sent = 0;
+
+    promises.
+    map(promise => promise.
+    then(i => {
+      iteration++;
+      if (sent === 0) {
+        sent = 1;
+        res.send(i.data);
+      }
+    }).
+    catch(i => {
+      iteration++;
+      if (iteration === promises.length && sent === 0) {
+        res.status(i.response.status).send({'status': i.response.data});
+      }
+    }));
+  } else {
+    res.status(404).send({'status': 404});
   }
 }
 
