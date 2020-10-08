@@ -183,7 +183,7 @@ function parseItem(item) {
 }
 
 // ACCOUNTS
-app.get(base + '/account', function(req, res){
+app.get(base + '/auth/account', function(req, res){
   if (req.body && req.body.user && req.body.password) {
     const i = config.findIndex(i => i.path === 'user');
     if (i !== -1) {
@@ -202,7 +202,7 @@ app.get(base + '/account', function(req, res){
     res.status(404).send({'404': 'error'});
   }
 });
-app.post(base + '/account', function(req, res){
+app.post(base + '/auth/account', function(req, res){
   if (req.body && req.body.user && req.body.password) {
     const i = config.findIndex(i => i.path === 'user');
     const foundUser = config[i].body.find(u => u.user === req.body.user);
@@ -216,7 +216,7 @@ app.post(base + '/account', function(req, res){
     res.status(404).send({'404': 'error'});
   }
 });
-app.delete(base + '/account/:id', function(req, res){
+app.delete(base + '/auth/account/:id', function(req, res){
   res.send({'error': 'deleting not allowed'});
 });
 
