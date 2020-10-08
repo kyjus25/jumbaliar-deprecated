@@ -10,7 +10,7 @@
     "build-fe": "cd ./mockdata-frontend; ng build --prod;",
     "start-be": "cd ./mockdata-backend; pm2 start server.js;",
     "start-fe": "cd ./mockdata-frontend; ng build --prod; pm2 start server.js;",
-    "start-docker": "npm run build-fe; docker-compose up -d;"
+    "start-docker": "npm run build-fe; docker-compose up -f build-docker-compose.yml -d;"
   },
   "author": "",
   "license": "ISC",

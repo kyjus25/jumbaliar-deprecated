@@ -8,10 +8,23 @@ const cors = require("cors");
 const fs = require('fs');
 const axios = require('axios');
 const https = require('https');
+const multer = require('multer');
+const mime = require('mime-types');
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+var upload = multer({
+  storage: multer.diskStorage({
+    destination: function(req, file, callback) {
+      callback(null, "./images");
+    },
+    filename: function(req, file, callback) {
+      callback(null, req.params.id + '.' + mime.extension(file.mimetype));
+    }
+  })
+}).array("file", 3); //Field name and max count
 
 let config = [];
 try { config = require('./config.json') } catch (e) { console.error('No config file detected. Please pass one in.'); }
@@ -169,6 +182,39 @@ for (let i = 0; i < config.length; i++) {
     app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(config[i].body) : checkProxy(req, res));
   }
 }
+
+// FILE UPLOADS
+app.get(base + '/image', function(req, res){
+  try {
+    fs.readdir('./images', (err, files) => {
+      res.send(files.filter(i => i !== '.gitkeep'));
+    });
+  } catch(err) {
+    console.error(err)
+    res.status(500).send({'500': 'error'});
+  }
+});
+app.post(base + '/image/:id', function(req, res){
+  upload(req, res, function(err, body) {
+    if (err) {
+      console.log(err);
+      return res.status(400).send({ error: 'Could not upload file' });
+    } else {
+      res.send({'200': 'ok'});
+    }
+  });
+});
+app.delete(base + '/image/:id', function(req, res){
+  try {
+    fs.unlinkSync('./images/' + req.params.id);
+    res.send({'200': 'ok'});
+  } catch(err) {
+    console.error(err);
+    res.status(500).send({'500': 'error'});
+  }
+});
+
+
 
 // THE 404 ROUTE
 app.get('*', function(req, res){ checkProxy(req, res); });
