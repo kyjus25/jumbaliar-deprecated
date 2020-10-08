@@ -47,3 +47,29 @@ When adding values to the return objects/arrays, you can interpolate the values 
 `{{<endpoint>[index].[key]}}`
 
 The index is optional. If not specified, it will return an array. For instance, if you had another endpoint called "organization" and you wanted to get the first index's "id", you could interpolate `{{organization[0].id}}`. If you wanted to return the whole organization object, you can interpolate `{{organization[0]}}`
+
+#### Dockerhub Description
+
+Example docker-compose.yml
+
+    jumbaliar_frontend:
+	    image: kyjus25/jumbaliar-frontend
+	    restart: always
+	    environment:
+		    - BACKEND_URL=http://localhost
+	    ports:
+		    - 8086:80
+    jumbaliar_backend:
+	    image: kyjus25/jumbaliar-backend
+	    restart: always
+	    volumes:
+		    - ./config.json:/node/config.json
+		    - ./proxy.json:/node/proxy.json
+		ports:
+		    - 80:80
+
+**Note**
+- config.json must exist as a volume. This is what holds all the data. Create a blank `config.json` with an empty array (`[]`) inside it.
+- `restart:always` on the backend is essential to how the system works. Express must be restarted when new endpoints are added.
+- Backend URL must match the URL of jumbaliar_backend.
+- `proxy.json` is optional. If you want to proxy 404s, this should contain an array of backends with no trailing slash.
