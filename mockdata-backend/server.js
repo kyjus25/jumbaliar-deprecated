@@ -10,6 +10,7 @@ const axios = require('axios');
 const https = require('https');
 const multer = require('multer');
 const mime = require('mime-types');
+const passwordHash = require('password-hash');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -98,7 +99,11 @@ function readCrud(index, id, req, res) {
     return Object.keys(item).findIndex(key => item[key] === id) > -1;
   });
   if (toSend) {
-    parseBody(toSend, req, res);
+
+    const clone = { ...toSend };
+    delete clone.password;
+
+    parseBody(clone, req, res);
   } else {
     checkProxy(req, res);
   }
@@ -113,7 +118,11 @@ function createCrud(index, body, req, res) {
   body['updatedOn'] = Date.now();
   config[index].body.push(body);
   saveConfig(config);
-  body ? res.send(body) : checkProxy(req, res);
+
+  const clone = { ...body };
+  delete clone.password;
+
+  body ? res.send(clone) : checkProxy(req, res);
 }
 
 function updateCrud(index, id, body, req, res) {
@@ -125,7 +134,11 @@ function updateCrud(index, id, body, req, res) {
   });
   toUpdate ? Object.assign(toUpdate, body) : null;
   saveConfig(config);
-  toUpdate ? res.send(toUpdate) : checkProxy(req, res);
+
+  const clone = { ...toUpdate };
+  delete clone.password;
+
+  toUpdate ? res.send(clone) : checkProxy(req, res);
 }
 
 function deleteCrud(index, id, req, res) {
@@ -154,9 +167,6 @@ function parseBody(body, req, res) {
 
 function parseItem(item) {
   Object.keys(item).forEach(key => {
-
-    console.log(item[key]);
-
     const regex = item[key].toString().match('\{{.*?\}}');
     if (regex && regex[0]) {
       const dto = regex[0].replace('{{','').replace('}}','').split('[')[0];
@@ -171,6 +181,44 @@ function parseItem(item) {
     }
   });
 }
+
+// ACCOUNTS
+app.get(base + '/account', function(req, res){
+  if (req.body && req.body.user && req.body.password) {
+    const i = config.findIndex(i => i.path === 'user');
+    if (i !== -1) {
+      const foundUser = config[i].body.find(i => i.user === req.body.user && passwordHash.verify(req.body.password, i.password));
+      if (foundUser) {
+        const clone = { ...foundUser };
+        delete clone.password;
+        res.send(clone);
+      } else {
+        res.status(404).send({'404': 'user not found'});
+      }
+    } else {
+      res.status(404).send({'404': 'user functionality not enabled'});
+    }
+  } else {
+    res.status(404).send({'404': 'error'});
+  }
+});
+app.post(base + '/account', function(req, res){
+  if (req.body && req.body.user && req.body.password) {
+    const i = config.findIndex(i => i.path === 'user');
+    const foundUser = config[i].body.find(u => u.user === req.body.user);
+    if (!foundUser) {
+      req.body.password = passwordHash.generate(req.body.password);
+      createCrud(i, req.body, req, res);
+    } else {
+      res.status(404).send({'404': 'user exists'});
+    }
+  } else {
+    res.status(404).send({'404': 'error'});
+  }
+});
+app.delete(base + '/account/:id', function(req, res){
+  res.send({'error': 'deleting not allowed'});
+});
 
 for (let i = 0; i < config.length; i++) {
   if (config[i].method === 'full') {
@@ -217,16 +265,12 @@ app.delete(base + '/uploads/:id', function(req, res){
   }
 });
 
-
-
 // THE 404 ROUTE
 app.get('*', function(req, res){ checkProxy(req, res); });
 app.post('*', function(req, res){ checkProxy(req, res); });
 app.put('*', function(req, res){ checkProxy(req, res); });
 app.delete('*', function(req, res){ checkProxy(req, res); });
 app.options('*', function(req, res){ checkProxy(req, res); });
-
-
 
 function checkProxy(req, res) {
   const agent = new https.Agent({

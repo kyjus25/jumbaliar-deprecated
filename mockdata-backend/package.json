@@ -12,6 +12,7 @@
     "axios": "~0.20.0",
     "cors": "~2.8.5",
     "express": "~4.17.1",
-    "multer": "~1.4.2"
+    "multer": "~1.4.2",
+    "password-hash": "~1.2.2"
   }
 }
