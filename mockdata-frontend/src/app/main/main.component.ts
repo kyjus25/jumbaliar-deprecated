@@ -10,7 +10,7 @@ import {ConfirmationService} from 'primeng/primeng';
 export class MainComponent implements OnInit {
   public disableSave = false;
   public editorOptions = {theme: 'vs-dark', language: 'json'};
-  public code = '{\n\n}';
+  public code = '[\n\n]';
   public endpoints;
   public modalPayload;
   public display = false;
@@ -91,7 +91,7 @@ export class MainComponent implements OnInit {
       creator: this.creator,
       usedBy: this.usedBy,
       action: 'add',
-      body: {}
+      body: []
     };
 
     this.http.post(window['env']['backendUrl'] + '/data', payload).subscribe(res => {
