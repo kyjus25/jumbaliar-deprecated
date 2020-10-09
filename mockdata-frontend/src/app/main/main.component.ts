@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {ConfirmationService} from 'primeng/primeng';
+import {ConfirmationService, SelectItem} from 'primeng/primeng';
 
 @Component({
   selector: 'app-main',
@@ -20,13 +20,13 @@ export class MainComponent implements OnInit {
   public creator: string;
   public usedBy;
 
-  public creators = [
+  public creators: SelectItem[] = [
     {label: 'Grant', value: 'grant'},
     {label: 'Braden', value: 'braden'},
     {label: 'Justin', value: 'justin'},
     {label: 'Micah', value: 'micah'},
   ]
-  public spas = [
+  public spas: SelectItem[] = [
     {label: 'Houston', value: 'houston'},
     {label: 'My Account', value: 'myaccount'},
     {label: 'Registration', value: 'registration'},
@@ -35,7 +35,7 @@ export class MainComponent implements OnInit {
     {label: 'Cultivator', value: 'cultivator'},
     {label: 'Ranch', value: 'ranch'}
   ];
-  public methods = [
+  public methods: SelectItem[] = [
     {label: 'FULL', value: 'full'},
     {label: 'GET', value: 'get'},
     {label: 'POST', value: 'post'},
