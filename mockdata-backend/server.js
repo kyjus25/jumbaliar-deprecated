@@ -16,6 +16,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 var upload = multer({
   storage: multer.diskStorage({
     destination: function(req, file, callback) {
@@ -276,12 +278,19 @@ function checkProxy(req, res) {
   const agent = new https.Agent({
     rejectUnauthorized: false
   });
-  const headers = req.headers['authorization'] ? {authorization: req.headers['authorization']} : {};
+  const headers = {
+    'Content-Type': 'application/json'
+  }
+  if (req.headers['authorization']) {
+    headers['authorization'] = req.headers['authorization'];
+  }
   const promises = [];
   proxy.forEach(i => {
-    promises.push(
-      axios[req.method.toLowerCase()](`${i}${req.url}`, {httpsAgent: agent, headers: headers} )
-    );
+    if (req.method.toLowerCase() === 'get') {
+      promises.push(axios[req.method.toLowerCase()](`${i}${req.url}`, {httpsAgent: agent, headers: headers} ));
+    } else {
+      promises.push(axios[req.method.toLowerCase()](`${i}${req.url}`, req.body, {httpsAgent: agent, headers: headers} ));
+    }
   });
 
   if (promises.length > 0) {
