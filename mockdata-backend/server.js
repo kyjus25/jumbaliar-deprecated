@@ -41,6 +41,8 @@ function uuid() {
   });
 }
 
+app.use('/uploads', express.static('uploads'))
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -193,7 +195,8 @@ app.get(base + '/auth/account/getAll', function(req, res){
     res.status(404).send({'404': 'user functionality not enabled'});
   }
 });
-app.get(base + '/auth/account', function(req, res){
+// account login
+app.post(base + '/auth/account/login', function(req, res){
   if (req.body && req.body.user && req.body.password) {
     const i = config.findIndex(i => i.path === 'auth/account');
     if (i !== -1) {
@@ -212,6 +215,7 @@ app.get(base + '/auth/account', function(req, res){
     res.status(404).send({'404': 'error'});
   }
 });
+// create account
 app.post(base + '/auth/account', function(req, res){
   if (req.body && req.body.user && req.body.password) {
     const i = config.findIndex(i => i.path === 'auth/account');
