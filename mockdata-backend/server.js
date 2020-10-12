@@ -61,6 +61,8 @@ app.post('/data', (req, res) => {
       const create = {
         path: req.body.path,
         method: req.body.method,
+        creator: req.body.creator,
+        usedBy: req.body.usedBy,
         body: req.body.body
       };
       config.push(create);

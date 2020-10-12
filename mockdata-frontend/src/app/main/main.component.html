@@ -29,6 +29,8 @@
       <tr>
         <td>/services/{{endpoint.path}}</td>
         <td>{{endpoint.method.toUpperCase()}}</td>
+        <td>{{endpoint.creator.toUpperCase()}}</td>
+        <td>{{endpoint.usedBy}}</td>
         <td>
           <p-button label="Edit Body" (onClick)="showObject(endpoint)"></p-button>&nbsp;&nbsp;&nbsp;
           <p-button label="Delete" (onClick)="delete(endpoint)"></p-button>
@@ -51,7 +53,7 @@
     <b>Method:</b>&nbsp;&nbsp;&nbsp;<p-dropdown appendTo="body" [options]="methods" [(ngModel)]="method"></p-dropdown><br><br>
     <b>Path:</b>&nbsp;&nbsp;&nbsp;<span>/services/<input type="text" pInputText [(ngModel)]="path"/></span><br><br>
     <b>Creator:</b>&nbsp;&nbsp;&nbsp;<p-dropdown appendTo="body" [options]="creators" [(ngModel)]="creator"></p-dropdown><br><br>
-    <b>Used By:</b>&nbsp;&nbsp;&nbsp;<span><p-multiSelect appendTo="body" [options]="spas" [(ngModel)]="usedBy"></p-multiSelect></span>
+    <b>Used By:</b>&nbsp;&nbsp;&nbsp;<span><p-multiSelect (onChange)="blah($event)" defaultLabel="Which Frontends use this endpoint?" [filter]="false" [maxSelectedLabels]="7" appendTo="body" [options]="spas" [(ngModel)]="usedBy"></p-multiSelect></span>
   </div>
 
   <p-footer>

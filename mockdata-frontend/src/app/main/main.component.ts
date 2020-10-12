@@ -75,6 +75,10 @@ export class MainComponent implements OnInit {
     this.method = 'get';
   }
 
+  public blah(event): void {
+    console.log(this.usedBy);
+  }
+
   public saveObject() {
     this.modalPayload.body = JSON.parse(this.code);
     this.modalPayload.action = 'update';
