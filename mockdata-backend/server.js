@@ -185,9 +185,17 @@ function parseItem(item) {
 }
 
 // ACCOUNTS
+app.get(base + '/auth/account/getAll', function(req, res){
+  const i = config.findIndex(i => i.path === 'auth/account');
+  if (i !== -1) {
+    parseBody(config[i].body, req, res);
+  } else {
+    res.status(404).send({'404': 'user functionality not enabled'});
+  }
+});
 app.get(base + '/auth/account', function(req, res){
   if (req.body && req.body.user && req.body.password) {
-    const i = config.findIndex(i => i.path === 'user');
+    const i = config.findIndex(i => i.path === 'auth/account');
     if (i !== -1) {
       const foundUser = config[i].body.find(i => i.user === req.body.user && passwordHash.verify(req.body.password, i.password));
       if (foundUser) {
@@ -206,7 +214,7 @@ app.get(base + '/auth/account', function(req, res){
 });
 app.post(base + '/auth/account', function(req, res){
   if (req.body && req.body.user && req.body.password) {
-    const i = config.findIndex(i => i.path === 'user');
+    const i = config.findIndex(i => i.path === 'auth/account');
     const foundUser = config[i].body.find(u => u.user === req.body.user);
     if (!foundUser) {
       req.body.password = passwordHash.generate(req.body.password);
