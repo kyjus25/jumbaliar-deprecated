@@ -24,7 +24,8 @@ var upload = multer({
       callback(null, "./uploads");
     },
     filename: function(req, file, callback) {
-      callback(null, req.params.id + '.' + mime.extension(file.mimetype));
+      // callback(null, req.params.id + '.' + mime.extension(file.mimetype));
+      callback(null, file.originalname);
     }
   })
 }).array("file", 3); //Field name and max count
