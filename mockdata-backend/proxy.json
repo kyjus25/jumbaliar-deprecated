@@ -1,4 +1,9 @@
 [
   "https://houston-rest-01.lab1.test",
-  "https://gateway-rest-01.lab1.test"
+  "https://gateway-rest-01.lab1.test",
+  "https://techsetup-rest-01.lab1.test",
+  "https://myproperties-rest-01.lab1.test",
+  "https://cultivator-rest-01.lab1.test",
+  "https://ranch-rest-01.lab1.test",
+  "https://registration-rest-01.lab1.test"
 ]
