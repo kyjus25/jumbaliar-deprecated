@@ -11,8 +11,9 @@ import {ButtonModule} from 'primeng/button';
 import {HttpClientModule} from '@angular/common/http';
 import {DialogModule} from 'primeng/dialog';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {DropdownModule, PanelModule, ConfirmationService, ConfirmDialogModule} from 'primeng/primeng';
+import {DropdownModule, PanelModule, ConfirmationService, ConfirmDialogModule, MessageService} from 'primeng/primeng';
 import {MultiSelectModule} from 'primeng/multiselect';
+import {ToastModule} from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -32,10 +33,12 @@ import {MultiSelectModule} from 'primeng/multiselect';
     DropdownModule,
     PanelModule,
     ConfirmDialogModule,
-    MultiSelectModule
+    MultiSelectModule,
+    ToastModule
   ],
   providers: [
-    ConfirmationService
+    ConfirmationService,
+    MessageService
   ],
   bootstrap: [AppComponent]
 })

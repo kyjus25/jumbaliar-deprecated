@@ -3,13 +3,15 @@ jumbaliar_frontend:
   restart: always
   environment:
     - BACKEND_URL=http://localhost
+    - CREATORS=Jumbaliar
+    - FRONTENDS=Jumbaliar
   ports:
-      - 8086:80
+    - 8086:80
 jumbaliar_backend:
   image: kyjus25/jumbaliar-backend
   restart: always
   volumes:
-      - ./mockdata-backend/config.json:/node/config.json
-      - ./mockdata-backend/proxy.json:/node/proxy.json
+    - ./mockdata-backend/config.json:/node/config.json
+    - ./mockdata-backend/proxy.json:/node/proxy.json
   ports:
-      - 80:80
+    - 80:80

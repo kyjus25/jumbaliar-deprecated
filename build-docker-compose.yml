@@ -3,6 +3,8 @@ jumbaliar_frontend:
   restart: always
   environment:
     - BACKEND_URL=http://localhost
+    - CREATORS=Jumbaliar
+    - FRONTENDS=Jumbaliar
   ports:
     - 8086:80
 jumbaliar_backend:
