@@ -29,6 +29,9 @@
       <tr>
         <td>/services/{{endpoint.path}}</td>
         <td>{{endpoint.method.toUpperCase()}}</td>
+        <td>{{endpoint.creator}}</td>
+        <td *ngIf="!endpoint.usedBy">N/A</td>
+        <td *ngIf="endpoint.usedBy">{{endpoint.usedBy}}</td>
         <td>
           <p-button label="Edit Body" (onClick)="showObject(endpoint)"></p-button>&nbsp;&nbsp;&nbsp;
           <p-button label="Delete" (onClick)="delete(endpoint)"></p-button>
@@ -49,7 +52,9 @@
 
   <div *ngIf="!modalPayload" class="add">
     <b>Method:</b>&nbsp;&nbsp;&nbsp;<p-dropdown appendTo="body" [options]="methods" [(ngModel)]="method"></p-dropdown><br><br>
-    <b>Path:</b>&nbsp;&nbsp;&nbsp;<span>/services/<input type="text" pInputText [(ngModel)]="path"/></span>
+    <b>Path:</b>&nbsp;&nbsp;&nbsp;<span>/services/<input type="text" pInputText [(ngModel)]="path"/></span><br><br>
+    <b>Creator:</b>&nbsp;&nbsp;&nbsp;<p-dropdown appendTo="body" [options]="creators" [editable]="true" [(ngModel)]="creator"></p-dropdown><br><br>
+    <b>Used By:</b>&nbsp;&nbsp;&nbsp;<span><p-multiSelect defaultLabel="Which Frontends use this endpoint?" [showToggleAll]="false" [filter]="false" [maxSelectedLabels]="7" appendTo="body" [options]="frontends" [(ngModel)]="usedBy"></p-multiSelect></span>
   </div>
 
   <p-footer>
@@ -62,3 +67,5 @@
   header="Confirm Delete"
   icon="fas fa-exclamation-triangle">
 </p-confirmDialog>
+
+<p-toast key="createConflictError"></p-toast>

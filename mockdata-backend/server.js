@@ -52,6 +52,7 @@ app.use(function(req, res, next) {
 
 app.get('/data', (req, res) => res.send(config));
 app.post('/data', (req, res) => {
+  let doNotSendBackConfig = false;
   switch(req.body.action) {
     case 'update':
       for (let i = 0; i < config.length; i++) {
@@ -64,9 +65,17 @@ app.post('/data', (req, res) => {
       const create = {
         path: req.body.path,
         method: req.body.method,
+        creator: req.body.creator,
+        usedBy: req.body.usedBy,
         body: req.body.body
       };
-      config.push(create);
+
+      const i = config.findIndex(i => ((i.path === req.body.path) && (i.method === req.body.method)));
+      if (i === -1) {
+        config.push(create);
+      } else {
+        doNotSendBackConfig = true;
+      }
       break;
     case 'delete':
       for (let i = 0; i < config.length; i++) {
@@ -77,8 +86,12 @@ app.post('/data', (req, res) => {
       break;
   }
 
-  saveAndRestart(config);
-  res.send(config);
+  if (doNotSendBackConfig) {
+    res.status(409).send({'409 CONFLICT': 'Cannot create: An endpoint alreday exists for that Path-Method combination!'});
+  } else {
+    saveAndRestart(config);
+    res.send(config);
+  }
 });
 
 function saveAndRestart(config) {

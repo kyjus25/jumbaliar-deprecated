@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {ConfirmationService} from 'primeng/primeng';
+import {ConfirmationService, MessageService, SelectItem} from 'primeng/primeng';
 
 @Component({
   selector: 'app-main',
@@ -14,9 +14,15 @@ export class MainComponent implements OnInit {
   public endpoints;
   public modalPayload;
   public display = false;
+
   public path: string;
   public method = 'full';
-  public methods = [
+  public creator: string = this.toTitleCase(window['env']['creators'].split(',')[0]);
+  public usedBy;
+
+  public creators: SelectItem[] = [];
+  public frontends: SelectItem[] = [];
+  public methods: SelectItem[] = [
     {label: 'FULL', value: 'full'},
     {label: 'GET', value: 'get'},
     {label: 'POST', value: 'post'},
@@ -27,9 +33,24 @@ export class MainComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {
-    this.http.get(window["env"]["backendUrl"] + '/data').subscribe(res => {
+    window['env']['creators'].split(',').forEach(element => {
+      this.creators.push({
+        label: this.toTitleCase(element),
+        value: element
+      });
+    });
+
+    window['env']['frontends'].split(',').forEach(element => {
+      this.frontends.push({
+        label: this.toTitleCase(element),
+        value: element
+      });
+    });
+
+    this.http.get(window['env']['backendUrl'] + '/data').subscribe(res => {
       this.endpoints = res;
     });
   }
@@ -37,8 +58,19 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.cols = [
       { field: 'path', header: 'Path' },
-      { field: 'method', header: 'Method' }
+      { field: 'method', header: 'Method' },
+      { field: 'creator', header: 'Creator' },
+      { field: 'usedBy', header: 'Used By:' }
     ];
+  }
+
+  private toTitleCase(str): string {
+    return str.replace(
+      /\w\S*/g,
+      (txt) => {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
   }
 
   public showObject(rowData) {
@@ -57,7 +89,7 @@ export class MainComponent implements OnInit {
   public saveObject() {
     this.modalPayload.body = JSON.parse(this.code);
     this.modalPayload.action = 'update';
-    this.http.post(window["env"]["backendUrl"] + '/data', this.modalPayload).subscribe(res => {
+    this.http.post(window['env']['backendUrl'] + '/data', this.modalPayload).subscribe(res => {
       this.endpoints = res;
       this.display = false;
     });
@@ -67,14 +99,29 @@ export class MainComponent implements OnInit {
     const payload = {
       path: this.path,
       method: this.method,
+      creator: this.creator,
+      usedBy: this.usedBy,
       action: 'add',
       body: []
     };
 
-    this.http.post(window["env"]["backendUrl"] + '/data', payload).subscribe(res => {
-      this.endpoints = res;
-      this.display = false;
-    });
+    this.http.post(window['env']['backendUrl'] + '/data', payload).subscribe(
+      res => {
+        this.endpoints = res;
+        this.display = false;
+      },
+      err => {
+        this.display = false;
+        this.messageService.add(
+          {
+            key: 'createConflictError',
+            severity: 'error',
+            summary: '409 CONFLICT - Cannot Create',
+            detail: 'An endpoint alreday exists for that Path-Method combination!'
+          }
+        );
+      }
+    );
   }
 
   public delete(endpoint) {
@@ -84,7 +131,7 @@ export class MainComponent implements OnInit {
       rejectLabel: 'Cancel',
       accept: () => {
         endpoint.action = 'delete';
-        this.http.post(window["env"]["backendUrl"] + '/data', endpoint).subscribe(res => {
+        this.http.post(window['env']['backendUrl'] + '/data', endpoint).subscribe(res => {
           this.endpoints = res;
         });
       }
