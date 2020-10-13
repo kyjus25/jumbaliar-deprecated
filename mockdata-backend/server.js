@@ -24,7 +24,8 @@ var upload = multer({
       callback(null, "./uploads");
     },
     filename: function(req, file, callback) {
-      callback(null, req.params.id + '.' + mime.extension(file.mimetype));
+      // callback(null, req.params.id + '.' + mime.extension(file.mimetype));
+      callback(null, file.originalname);
     }
   })
 }).array("file", 3); //Field name and max count
@@ -40,6 +41,8 @@ function uuid() {
     return v.toString(16);
   });
 }
+
+app.use('/uploads', express.static('uploads'))
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -198,9 +201,18 @@ function parseItem(item) {
 }
 
 // ACCOUNTS
-app.get(base + '/auth/account', function(req, res){
+app.get(base + '/auth/account/getAll', function(req, res){
+  const i = config.findIndex(i => i.path === 'auth/account');
+  if (i !== -1) {
+    parseBody(config[i].body, req, res);
+  } else {
+    res.status(404).send({'404': 'user functionality not enabled'});
+  }
+});
+// account login
+app.post(base + '/auth/account/login', function(req, res){
   if (req.body && req.body.user && req.body.password) {
-    const i = config.findIndex(i => i.path === 'user');
+    const i = config.findIndex(i => i.path === 'auth/account');
     if (i !== -1) {
       const foundUser = config[i].body.find(i => i.user === req.body.user && passwordHash.verify(req.body.password, i.password));
       if (foundUser) {
@@ -217,9 +229,10 @@ app.get(base + '/auth/account', function(req, res){
     res.status(404).send({'404': 'error'});
   }
 });
+// create account
 app.post(base + '/auth/account', function(req, res){
   if (req.body && req.body.user && req.body.password) {
-    const i = config.findIndex(i => i.path === 'user');
+    const i = config.findIndex(i => i.path === 'auth/account');
     const foundUser = config[i].body.find(u => u.user === req.body.user);
     if (!foundUser) {
       req.body.password = passwordHash.generate(req.body.password);
