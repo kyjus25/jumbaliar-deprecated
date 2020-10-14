@@ -53,16 +53,28 @@ app.use(function(req, res, next) {
 app.get('/data', (req, res) => res.send(config));
 app.post('/data', (req, res) => {
   let doNotSendBackConfig = false;
+  let restart = true;
   switch(req.body.action) {
     case 'update':
       for (let i = 0; i < config.length; i++) {
         if (config[i].path === req.body.path && config[i].method === req.body.method) {
           config[i].body = req.body.body;
+          restart = false;
+        }
+      }
+      break;
+    case 'updateFields':
+      for (let i = 0; i < config.length; i++) {
+        if (config[i].path === req.body.path && config[i].method === req.body.method) {
+          config[i].fields = req.body.fields;
+          restart = false;
         }
       }
       break;
     case 'add':
       const create = {
+        id: uuid(),
+        fields: req.body.fields,
         path: req.body.path,
         method: req.body.method,
         creator: req.body.creator,
@@ -87,10 +99,14 @@ app.post('/data', (req, res) => {
   }
 
   if (doNotSendBackConfig) {
-    res.status(409).send({'409 CONFLICT': 'Cannot create: An endpoint alreday exists for that Path-Method combination!'});
+    res.status(409).send({'409 CONFLICT': 'Cannot create: An endpoint already exists for that Path-Method combination!'});
   } else {
-    saveAndRestart(config);
     res.send(config);
+    if (restart) {
+      setTimeout(() => {
+        saveAndRestart(config);
+      }, 1000)
+    }
   }
 });
 
