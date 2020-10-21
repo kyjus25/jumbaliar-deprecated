@@ -196,19 +196,25 @@ function parseItem(item) {
   let string = JSON.stringify(item);
   const regex = /\{\{.*?\}\}/g;
   const match = string.match(regex);
-  match.forEach(r => {
-    const dto = r.replace('{{','').replace('}}','').split('[')[0];
-    const hasIndex = r.replace('{{','').replace('}}','').split('[')[1];
-    const index = hasIndex ? hasIndex.split(']')[0] : undefined;
-    const dtoKey = r.replace('{{','').replace('}}','').split('.')[1];
-
-    const endpointBody = config.find(endpoint => endpoint.path === dto && (endpoint.method === 'full' || endpoint.method === 'get')).body;
-    const object = index ? endpointBody[index] : endpointBody;
-    const value = dtoKey ? object[dtoKey] : object;
-
-    string = string.replace('"' + r + '"', JSON.stringify(value));
-    string = string.replace("'" + r + "'", JSON.stringify(value));
-  });
+  if (match) {
+    match.forEach(r => {
+      try {
+        const dto = r.replace('{{','').replace('}}','').split('[')[0];
+        const hasIndex = r.replace('{{','').replace('}}','').split('[')[1];
+        const index = hasIndex ? hasIndex.split(']')[0] : undefined;
+        const dtoKey = r.replace('{{','').replace('}}','').split('.')[1];
+    
+        const endpointBody = config.find(endpoint => endpoint.path === dto && (endpoint.method === 'full' || endpoint.method === 'get')).body;
+        const object = index ? endpointBody[index] : endpointBody;
+        const value = dtoKey ? object[dtoKey] : object;
+    
+        string = string.replace('"' + r + '"', JSON.stringify(value));
+        string = string.replace("'" + r + "'", JSON.stringify(value));
+      } catch(e) {
+        // Silence is golden.
+      }
+    });
+  }
   return JSON.parse(string);
 }
 
