@@ -186,34 +186,30 @@ function deleteCrud(index, id, req, res) {
 
 function parseBody(body, req, res) {
   if (body) {
-    try {
-      body.forEach(item => {
-        parseItem(item);
-      });
-    } catch (e) {
-      parseItem(body);
-    }
-    res.send(body);
+    res.send(parseItem(body));
   } else {
     checkProxy(req, res);
   }
 }
 
 function parseItem(item) {
-  Object.keys(item).forEach(key => {
-    const regex = item[key].toString().match('\{{.*?\}}');
-    if (regex && regex[0]) {
-      const dto = regex[0].replace('{{','').replace('}}','').split('[')[0];
-      const hasIndex = regex[0].replace('{{','').replace('}}','').split('[')[1];
-      const index = hasIndex ? hasIndex.split(']')[0] : undefined;
-      const dtoKey = regex[0].replace('{{','').replace('}}','').split('.')[1];
+  let string = JSON.stringify(item);
+  const regex = /\{\{.*?\}\}/g;
+  const match = string.match(regex);
+  match.forEach(r => {
+    const dto = r.replace('{{','').replace('}}','').split('[')[0];
+    const hasIndex = r.replace('{{','').replace('}}','').split('[')[1];
+    const index = hasIndex ? hasIndex.split(']')[0] : undefined;
+    const dtoKey = r.replace('{{','').replace('}}','').split('.')[1];
 
-      const endpointBody = config.find(endpoint => endpoint.path === dto && (endpoint.method === 'full' || endpoint.method === 'get')).body;
-      const object = index ? endpointBody[index] : endpointBody;
-      const value = dtoKey ? object[dtoKey] : object;
-      item[key] = value;
-    }
+    const endpointBody = config.find(endpoint => endpoint.path === dto && (endpoint.method === 'full' || endpoint.method === 'get')).body;
+    const object = index ? endpointBody[index] : endpointBody;
+    const value = dtoKey ? object[dtoKey] : object;
+
+    string = string.replace('"' + r + '"', JSON.stringify(value));
+    string = string.replace("'" + r + "'", JSON.stringify(value));
   });
+  return JSON.parse(string);
 }
 
 // ACCOUNTS
@@ -271,11 +267,9 @@ for (let i = 0; i < config.length; i++) {
     app['post'](base + '/' + config[i].path, (req, res) => createCrud(i, req.body, req, res));
     app['put'](base + '/' + config[i].path + '/:id', (req, res) => updateCrud(i, req.params.id, req.body, req, res));
     app['delete'](base + '/' + config[i].path + '/:id', (req, res) => deleteCrud(i, req.params.id, req, res));
-  } else if (config[i].method === 'get') {
-    app[config[i].method](base + '/' + config[i].path, (req, res) => parseBody(config[i]['body'], req, res));
-  } else {
-    app[config[i].method](base + '/' + config[i].path, (req, res) => config[i] ? res.send(config[i].body) : checkProxy(req, res));
-  }
+    } else {
+      app[config[i].method](base + '/' + config[i].path, (req, res) => parseBody(config[i]['body'], req, res));
+    }
 }
 
 // FILE UPLOADS
