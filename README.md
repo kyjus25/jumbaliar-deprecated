@@ -5,6 +5,9 @@
 <h1>JumbaLiar</h1>
 JumbaLiar is a frontend and backend that allows the user to quickly generate mockdata using dynamically generated express endpoints.
 
+# DEPRECATED
+JumbaLiar 2.0 is now in development, go check it out!
+
 ## Prerequisites
 • Angular CLI (`npm install @angular/cli -g` if you do not already have it.)
 • Docker Compose
